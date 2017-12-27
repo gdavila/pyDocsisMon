@@ -1,13 +1,12 @@
 # spyproject
+spyproject/
 .spyproject/
 .spyproject
 
-# private files configurations
-private.py
 
 # python cache
 __pycache__/
-__pycache__/
+__pycache__
 
 
 
