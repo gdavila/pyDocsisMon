@@ -4,7 +4,6 @@
 from docsisDevice import DocsisDevice
 from ipDevices import ipDevice
 from mibs import mibs
-
 import re
 import private as defaults
 
@@ -57,8 +56,16 @@ class Cm(ipDevice):
        return
     
     def getModel(self): return self.__model
+    def getSw_rev(self): return self.__sw_rev 
     def getVendor(self): return self.__vendor
-
+    
+    #method: Propietary SA mib
+    def getLANdevices(self):
+        oid = (mibs.oid['saRgIpMgmtLanAddrHostName'],)
+        SnmpObj = self.snmpIf.getNext( *oid)
+        #if SnmpObj == None: return None
+        return (list(SnmpObj.values()))
+    
 class fullbandCapture():
     
     def __init__(self, snmpIf):
@@ -87,7 +94,9 @@ class fullbandCapture():
         
     def get(self):
         oids = (mibs.oid['docsIf3CmSpectrumAnalysisMeasAmplitudeData'],)
+        #try:
         SnmpObj = self.__snmpIf.getTable(*oids)
+        #except SnmpError as e: return e
         if SnmpObj == None: return None
         oid = mibs.oid['docsIf3CmSpectrumAnalysisMeasAmplitudeData']+'.'
         pattern = re.compile(oid)
@@ -112,6 +121,7 @@ class DocsIf():
            self.__index=[] #DocsisIf OID Index 
            self.__type={} #DocsusIf type: UP/DOWN
            self.__downSnr={} #SNR values for all DownDocsIf
+           self.__upSnr={} #SNR values for all DownDocsIf
            self.__chId={} #Channel ID values for all DocsIf
            self.__chFreq={} #Channel ID values for all DocsIf
            self.__downPower={}  #Power values for all DownDocsIf

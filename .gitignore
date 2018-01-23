@@ -11,3 +11,4 @@ __pycache__
 
 
 *.ini
+.spyproject/workspace.ini

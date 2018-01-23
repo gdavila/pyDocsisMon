@@ -10,7 +10,7 @@ Created on Wed Oct 11 17:43:47 2017
 '''Example
 
      This example get some information about a CM by knowing its MAC address 
-     and the CMTS the CM belongs.
+     and the CMTS that CM belongs.
                   ------                      -------
                  | myCM |--------------------| myCMTS |
                   ------                      ------- 
@@ -21,6 +21,7 @@ Created on Wed Oct 11 17:43:47 2017
 
 from cmtsDevices import Cmts
 from cmDevices import Cm
+import time
 
 #Defining the CMTS  as an object
 #Be sure to had loaded the right communities of your network in private.py/default.py
@@ -65,22 +66,3 @@ print ("PartiServ Channel list:\t", PartialServ )
 
 
 
-'''fbc = myCm.fbc()
-fbc.config()
-fbc.inactivityTimeout = 480
-fbc.firstFrequency = 50000000
-fbc.lastFrequency =  70000000
-fbc.span =  10000000
-fbc.binsPerSegment = 1024
-fbc.noisebandwidth = 150
-fbc.numberOfAverages = 1
-time.sleep(0.5)
-iniTime = time.time()
-data = fbc.get()
-result = 'OK'
-if data == {}: result = 'FAIL'
-endTime = time.time()
-print("Modelo\t\t Fullband Response \t\t Result")
-print(cm.getModel() +'\t\t' + str(endTime-iniTime) + '\t\t'+ result)
-
-'''

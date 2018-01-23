@@ -3,6 +3,9 @@
 class mibs:
     oid=     {
             
+            #Propietary
+            'saRgIpMgmtLanAddrHostName' : '1.3.6.1.4.1.1429.79.2.3.4.1.7',
+            
             #SYS OIDS
             'sysdescr.0':'1.3.6.1.2.1.1.1.0',
             'ifDescr':'1.3.6.1.2.1.2.2.1.2',
