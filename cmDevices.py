@@ -78,6 +78,11 @@ class fullbandCapture():
         self.noisebandwidth = 150
         self.windowsFunction = 0
         self.numberOfAverages = 1
+    
+    def turnOff(self):
+        setValues = [ (mibs.oid['docsIf3CmSpectrumAnalysisEnable'], 'Integer', 2),]
+        self.__snmpIf.set(*setValues)
+        return True
         
     def config(self):
         setValues = [ (mibs.oid['docsIf3CmSpectrumAnalysisEnable'], 'Integer', 1),
@@ -121,6 +126,9 @@ class DocsIf():
            self.__index=[] #DocsisIf OID Index 
            self.__type={} #DocsusIf type: UP/DOWN
            self.__downSnr={} #SNR values for all DownDocsIf
+           self.__corrCodewords = {}
+           self.__uncorrCodewords = {}
+           self.__unerrCodewords = {}
            self.__upSnr={} #SNR values for all DownDocsIf
            self.__chId={} #Channel ID values for all DocsIf
            self.__chFreq={} #Channel ID values for all DocsIf
@@ -204,6 +212,9 @@ class DocsIf():
            self.updateDownSnr()
            self.updateDownPower()
            self.updateOperStatus()
+           self.updateCorrCodewords()
+           self.updateUncorrCodewords()
+           self.updateUnerrCodewords()
            return
            
        def updateIndex(self):
@@ -242,26 +253,44 @@ class DocsIf():
            self.__chId={}
            self.__updateDownChId()
            self.__updateUpChId()
-           return
+           return self.__chId
        
        def updateChFreq(self):
            self.__chFreq={}
            self.__updateDownChFreq()
            self.__updateUpChFreq()
-           return
+           return self.__chFreq
        
        def updateDownSnr(self):
            self.__downSnr={}
            if self.__index==[]: self.updateIndex()
            self.__updateDownChValues((mibs.oid['docsIfSigQSignalNoise'],), self.__downSnr)
-           return 
+           return self.__downSnr
        
        def updateDownPower(self):   
            self.__downPower={}
            if self.__index==[]: self.updateIndex()
            self.__updateDownChValues((mibs.oid['docsIfDownChannelPower'],), self.__downPower)
-           return 
-                  
+           return self.__downPower
+                
+       def updateCorrCodewords (self):
+           self.__corrCodewords = {}
+           if self.__index==[]: self.updateIndex()
+           self.__updateDownChValues((mibs.oid['docsIfSigQCorrecteds'],), self.__corrCodewords)
+           return self.__corrCodewords
+       
+       def updateUnerrCodewords (self):
+           self.__unerrCodewords = {}
+           if self.__index==[]: self.updateIndex()
+           self.__updateDownChValues((mibs.oid['docsIfSigQUnerroreds'],), self.__unerrCodewords)
+           return self.__unerrCodewords
+        
+       def updateUncorrCodewords (self):
+           self.__uncorrCodewords = {}
+           if self.__index==[]: self.updateIndex()
+           self.__updateDownChValues((mibs.oid['docsIfSigQUncorrectables'],), self.__uncorrCodewords)
+           return  self.__uncorrCodewords
+        
        def updatePartialSrv(self):
            self.__partialSrvCh={}
            for index in self.__type.keys():
@@ -271,7 +300,7 @@ class DocsIf():
                if self.__type[index]==DocsIf.upstream_id:
                    if self.__usRangingStatus[index]!='4':
                        self.__partialSrvCh[index]=self.__chId[index]
-           return
+           return self.__partialSrvCh
        
        def getPartialSrvCh(self): return self.__partialSrvCh
        
@@ -282,6 +311,9 @@ class DocsIf():
        def getType(self): return self.__type
        def getDownSnr(self): return self.__downSnr
        def getDownPower(self): return self.__downPower
+       def getCorrCodewords(self): return self.__corrCodewords
+       def getUncorrCodewords(self): return self.__uncorrCodewords
+       def getUnerrCodewords(self): return self.__unerrCodewords
        def getChId(self): return self.__chId
        def getChFreq(self): return self.__chFreq
        def getOperStatus(self): return self.__operStatus
