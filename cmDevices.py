@@ -30,7 +30,6 @@ class Cm(ipDevice):
         #Pass to DocsisIf the snmpIf used to get all the data
         self.__DocsIf=DocsIf(self.snmpIf)
         self.__fbc = fullbandCapture(self.snmpIf)
-        self.test = fullbandCapture(self.snmpIf)
         self.updateSysdescr()
     
     #method: Interfaces Docsis active in cm
@@ -54,6 +53,12 @@ class Cm(ipDevice):
        self.__sw_rev = result.group('sw_rev').lstrip()
        self.__model = result.group('model').lstrip()
        return
+   
+    def getInOctets(self): 
+        oid = (mibs.oid['ifHCInOctets']+'.'+self.__DocsIf.getIfMacIndex(), )
+        SnmpObj = self.snmpIf.get( *oid)
+        #if SnmpObj == None: return None
+        return SnmpObj[mibs.oid['ifHCInOctets']+'.'+self.__DocsIf.getIfMacIndex()]
     
     def getModel(self): return self.__model
     def getSw_rev(self): return self.__sw_rev 
@@ -66,6 +71,7 @@ class Cm(ipDevice):
         #if SnmpObj == None: return None
         return (list(SnmpObj.values()))
     
+    
 class fullbandCapture():
     
     def __init__(self, snmpIf):
@@ -74,7 +80,7 @@ class fullbandCapture():
         self.firstFrequency = 50000000
         self.lastFrequency = 1000000000
         self.span = 10000000
-        self.binsPerSegment = 1024
+        self.binsPerSegment = 250
         self.noisebandwidth = 150
         self.windowsFunction = 0
         self.numberOfAverages = 1
@@ -85,14 +91,14 @@ class fullbandCapture():
         return True
         
     def config(self):
-        setValues = [ (mibs.oid['docsIf3CmSpectrumAnalysisEnable'], 'Integer', 1),
-                      (mibs.oid['docsIf3CmSpectrumAnalysisInactivityTimeout'], 'Integer', self.inactivityTimeout),
+        setValues = [ (mibs.oid['docsIf3CmSpectrumAnalysisInactivityTimeout'], 'Integer', self.inactivityTimeout),
                       (mibs.oid['docsIf3CmSpectrumAnalysisFirstSegmentCenterFrequency'],'Gauge', self.firstFrequency),
                       (mibs.oid['docsIf3CmSpectrumAnalysisLastSegmentCenterFrequency'],'Gauge', self.lastFrequency),
                       (mibs.oid['docsIf3CmSpectrumAnalysisSegmentFrequencySpan'],'Gauge', self.span),
                       (mibs.oid['docsIf3CmSpectrumAnalysisBinsPerSegment'],'Gauge',self.binsPerSegment),
                       (mibs.oid['docsIf3CmSpectrumAnalysisEquivalentNoiseBandwidth'], 'Gauge', self.noisebandwidth),
                       (mibs.oid['docsIf3CmSpectrumAnalysisNumberOfAverages'], 'Gauge', self.numberOfAverages), 
+                      (mibs.oid['docsIf3CmSpectrumAnalysisEnable'], 'Integer', 1),
                     ] 
         self.__snmpIf.set(*setValues)
         return True
@@ -233,6 +239,8 @@ class DocsIf():
                if SnmpObj[mibs.oid['ifType']+'.'+i]== '127':
                    self.__macIfIndex=i
            return
+       
+       def getIfMacIndex(self): return self.__macIfIndex
        
        def updateOperStatus(self): 
            self.__operStatus={}

@@ -14,6 +14,10 @@ class mibs:
             'ifSpeed': '1.3.6.1.2.1.2.2.1.5',
             'ifPhysAddress':'1.3.6.1.2.1.2.2.1.6',
             'ifOperStatus': '1.3.6.1.2.1.2.2.1.8',
+            
+            
+            #ifTable
+            'ifHCInOctets' : '1.3.6.1.2.1.31.1.1.1.6',
 
             #CMTS DOCSIS 2.0 /DOCSIS 3.0  OIDS
 			  'docsIfCmtsCmStatusMacAddress':'1.3.6.1.2.1.10.127.1.3.3.1.2',
