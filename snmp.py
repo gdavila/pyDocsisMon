@@ -103,7 +103,8 @@ def getTable_snmp(ip, SnmpAttr, *Objnames):
         cmdgen.UdpTransportTarget((ip, SnmpAttr.get_port()),timeout = int(SnmpAttr.get_timeout()), retries= int(SnmpAttr.get_retries())),
         0, SnmpAttr.get_bulkcount(),
         *Objnames,
-        lookupMib=SnmpAttr.get_lookupmib()
+        lookupMib=SnmpAttr.get_lookupmib(),
+        maxRows = SnmpAttr.get_maxrows(),
     )
     # Check for errors and print out results
     if errorIndication:

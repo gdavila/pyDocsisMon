@@ -5,7 +5,7 @@ Created on Mon Jan 15 12:16:14 2018
 @author: gdavila
 """
 
-import cm31Devices
+import cmDevices
 import time
 from snmp import SnmpError
 import sys
@@ -48,14 +48,15 @@ def format_fb_data(data):
 #10.254.1.29 D3.1
 def main():
     try:
-        myIP= '10.218.49.38'
-        myCm = cm31Devices.Cm31(myIP)
+        #myIP= '10.32.165.147'
+        myIP = '10.218.49.38'
+        myCm = cmDevices.Cm(myIP)
     
        # getting the CM Model
-        myCmModel = myCm.getModel()
-        print ("CM acceded via SNMP Interface")
-        print ("CM IP:\t", myIP)
-        print ("CM Model:\t", myCmModel)
+        #myCmModel = myCm.getModel()
+        #print ("CM acceded via SNMP Interface")
+        #print ("CM IP:\t", myIP)
+        #print ("CM Model:\t", myCmModel)
         print ("CM Firmware:\t", myCm.getSw_rev())
         #Accesing to Docsis Interfaces
         myCmDocIf = myCm.DocsIf()
@@ -67,21 +68,25 @@ def main():
         
         #Gettingfull band capture information;
         print ("Full Band Capture Information:")
-        for i in range(0,2):
+        print("Modelo \t\tTiempo Espera SET/GET(s) \tTiempo de Descarga FB data(s)\t Result\t\t Nro Muestras")
+
+        for i in range(1,2):
             data = {}
             fbc = myCm.fbc()
             fbc.turnOff()
             time.sleep(2)
             fbc.inactivityTimeout = 300
-            fbc.firstFrequency = 500000000
+            fbc.firstFrequency = 50000000
             fbc.lastFrequency =  1000000000
-            fbc.span =  10000000
-            fbc.binsPerSegment = 10
+            fbc.span =   10000000
+            fbc.binsPerSegment = 250
             fbc.noisebandwidth = 150
             fbc.numberOfAverages = 1
             fbc.config()
+            #print ("Set OK")
             timeConfig = time.time()
             #time.sleep(20)
+            #fbc.config()
             result = 'data OK'
             timeGet = time.time()
             data = fbc.get()
@@ -95,16 +100,16 @@ def main():
                 timeResponse = time.time()
                 #print (timeGet, len(format_fb_data(data)))
                 
-            print("Model  \t\t Data ready time\tData recieved time\t Result")
-            print(str(i)+" "+myCm.getModel() +'\t\t' + str(round(timeGet-timeConfig)) + '\t\t'+ str(round(timeResponse - timeGet)) + '\t\t'+  str(result))
+            print(str(i)+" "+myCm.getModel() +'\t\t\t' + str(round(timeGet-timeConfig)) + \
+                  '\t\t\t'+ str(round(timeResponse - timeGet)) + '\t\t\t'+  str(result)+'\t\t'+ str(len(format_fb_data(data)[0])))
             #print ("\nData [frequency(Hz), Power (dBmV)]: \n")
-            print(len(format_fb_data(data)[0]))
+            
         return(format_fb_data(data))  
     except SnmpError as e:
         print(e)
         result = e
  
-main()
-#freq, pot= main()
-#ggplot.qplot(freq[18000:], pot[18000:], geom="line")
+#main()
+freq, pot= main()
+ggplot.qplot(freq[0:], pot[0:], geom="line")
 
