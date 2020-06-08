@@ -89,7 +89,7 @@ print ("PartiServ Channel list:\t", PartialServ )
 
 Output expected:
 
-```json
+```bash
 CM acceded via SNMP Interface
 CM IP:   192.168.0.10
 CM Model:        F@ST3286
