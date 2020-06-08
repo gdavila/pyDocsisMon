@@ -3,42 +3,38 @@
 Created on Mon Feb 19 16:30:59 2018
 
 @author: gdavila
+
+This is a very basic example that allows to monitor the Docsis Health of a CM
+within a time window. The script request some information to the CM periodically.  
 """
-import cmDevices
+import docsisMon.cmDevices as cmDevices
 import time
-from snmp import SnmpError
+from docsisMon.snmp import SnmpError
 
 
 
-
-# definitions 
-#myIP= '10.254.1.44' #Lucas
-myIP= '10.254.1.46' #NTyMR
-#myIP="10.254.1.50"
-
-fileName = "multicast.log"
-
-interval = 10 #seconds
-duration = 10*60*60 #seconds
+# 1 Setup 
+myIP= '10.254.1.46' # CM IP address you want to monitor
+fileName = "multicast.log" # Filename to save your results
+interval = 10 # monitoring interval (seconds) to do SNMP request to the CM
+duration = 10*60*60 # Total last of the monitoring
 
 
-# create CM
+# 2 create the  CM device
 myCm = cmDevices.Cm(myIP)
 
 
-# Getting Basic Values
-CmModel = myCm.getModel()
-CmFw = myCm.getSw_rev()
-CmDocIf = myCm.DocsIf()
-ChId = CmDocIf.getChId()
-Freq = CmDocIf.getChFreq()
-CmMac = CmDocIf.getMac()
-Snr = CmDocIf.getDownSnr()
-
-
-
+# 3 Getting some  Basic Values to monitor
+CmModel = myCm.getModel() # Model
+CmFw = myCm.getSw_rev() # Software version
+CmDocIf = myCm.DocsIf() # Docsis Iface Object
+ChId = CmDocIf.getChId() # ids of the Docsis channels
+Freq = CmDocIf.getChFreq() # Frecuencies of the Docsis channels
+CmMac = CmDocIf.getMac() # Mac Address of the Docsis Iface
+Snr = CmDocIf.getDownSnr() # SNR of the Downstream channles
+#Corrected Codewords, Uncorrected Codewords, Unerrored Codewords
 CorrC_i, UncorrC_i, UnerrC_i  = CmDocIf.updateCorrCodewords(), CmDocIf.updateUncorrCodewords(), CmDocIf.updateUnerrCodewords()
-
+#Amount of octects received by the CM 
 OctetsIn_i= myCm.getInOctets()
 timeStamp_i = time.time()
 start = time.time()

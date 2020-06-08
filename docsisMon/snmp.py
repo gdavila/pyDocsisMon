@@ -26,13 +26,13 @@ def makeSnmpObj_rfc1902(*args):
     return(oid_type)
     
 def set_snmp(ip, SnmpAttr, *oid_type_value):
-    ObjSetNames = makeSnmpObj_rfc1902(*oid_type_value);
+    ObjSetNames = makeSnmpObj_rfc1902(*oid_type_value)
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBinds = cmdGen.setCmd(
-        cmdgen.CommunityData(SnmpAttr.get_community()),
-        cmdgen.UdpTransportTarget((ip, SnmpAttr.get_port()),timeout=int(SnmpAttr.get_timeout()), retries=int(SnmpAttr.get_retries())),
+        cmdgen.CommunityData(SnmpAttr.COMMUNITY),
+        cmdgen.UdpTransportTarget((ip, SnmpAttr.PORT),timeout=int(SnmpAttr.TIMEOUT), retries=int(SnmpAttr.RETRIES)),
         *ObjSetNames,
-        lookupMib=SnmpAttr.get_lookupmib()
+        lookupMib=SnmpAttr.LookupMib
     )
     # Check for errors and print out results
     if errorIndication:
@@ -50,10 +50,10 @@ def set_snmp(ip, SnmpAttr, *oid_type_value):
 def get_snmp(ip, SnmpAttr, *Objnames):
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
-        cmdgen.CommunityData(SnmpAttr.get_community()),
-        cmdgen.UdpTransportTarget((ip, SnmpAttr.get_port()),timeout=int(SnmpAttr.get_timeout()), retries=int(SnmpAttr.get_retries())),
+        cmdgen.CommunityData(SnmpAttr.COMMUNITY),
+        cmdgen.UdpTransportTarget((ip, SnmpAttr.PORT),timeout=int(SnmpAttr.TIMEOUT), retries=int(SnmpAttr.RETRIES)),
         *Objnames,
-        lookupMib=SnmpAttr.get_lookupmib()
+        lookupMib=SnmpAttr.LookupMib,
     )
     # Check for errors and print out results
     if errorIndication:
@@ -70,11 +70,11 @@ def get_snmp(ip, SnmpAttr, *Objnames):
 def getNext_snmp(ip, SnmpAttr, *Objnames):
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.nextCmd(
-        cmdgen.CommunityData(SnmpAttr.get_community()),
-        cmdgen.UdpTransportTarget((ip, SnmpAttr.get_port()),timeout = int(SnmpAttr.get_timeout()), retries= int(SnmpAttr.get_retries())),
-        maxRows=SnmpAttr.get_maxrows(),
-        ignoreNonIncreasingOid=SnmpAttr.get_ignorenonincreasingoid(),
-        lookupMib=SnmpAttr.get_lookupmib(),
+        cmdgen.CommunityData(SnmpAttr.COMMUNITY),
+        cmdgen.UdpTransportTarget((ip, SnmpAttr.PORT),timeout = int(SnmpAttr.TIMEOUT), retries= int(SnmpAttr.RETRIES)),
+        maxRows=SnmpAttr.MAXROWS,
+        ignoreNonIncreasingOid=SnmpAttr.IgnoreNonIncreasingOid,
+        lookupMib=SnmpAttr.LookupMib,
         *Objnames
     )
     # Check for errors and print out results
@@ -85,7 +85,6 @@ def getNext_snmp(ip, SnmpAttr, *Objnames):
             raise SnmpError(errorStatus,errorIndex,varBindTable)  
         else:
             vars = {}
-            #print(varBindTable)
             for varBindTableRow in varBindTable:
                 for val, name in varBindTableRow:
                     vars[val.prettyPrint()] = name.prettyPrint()
@@ -94,19 +93,14 @@ def getNext_snmp(ip, SnmpAttr, *Objnames):
 def getTable_snmp(ip, SnmpAttr, *Objnames):
     
     cmdGen = cmdgen.CommandGenerator()
-    #print ("******")
-    #print (ip, *Objnames)
-    #print ("******")
-    #print (SnmpAttr.get_bulkcount())
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.bulkCmd(
-        cmdgen.CommunityData(SnmpAttr.get_community()),
-        cmdgen.UdpTransportTarget((ip, SnmpAttr.get_port()),timeout = int(SnmpAttr.get_timeout()), retries= int(SnmpAttr.get_retries())),
-        0, SnmpAttr.get_bulkcount(),
+        cmdgen.CommunityData(SnmpAttr.COMMUNITY),
+        cmdgen.UdpTransportTarget((ip, SnmpAttr.PORT),timeout = int(SnmpAttr.TIMEOUT), retries= int(SnmpAttr.RETRIES)),
+        0, SnmpAttr.BULKCOUNT,
         *Objnames,
-        lookupMib=SnmpAttr.get_lookupmib(),
-        maxRows = SnmpAttr.get_maxrows(),
+        lookupMib=SnmpAttr.LookupMib,
+        maxRows = SnmpAttr.MAXROWS,
     )
-    # Check for errors and print out results
     if errorIndication:
         raise SnmpError(errorIndication)
     else:
@@ -117,7 +111,5 @@ def getTable_snmp(ip, SnmpAttr, *Objnames):
             for varBindTableRow in varBindTable:
                 for ObjectName, ObjectValue in varBindTableRow:
                     vars[ObjectName.prettyPrint()] = ObjectValue.prettyPrint()
-                    #print('%s.... %s' % (( ObjectName.prettyPrint(), ObjectValue.prettyPrint() )))
-    #print (vars)
     return(vars)    
 

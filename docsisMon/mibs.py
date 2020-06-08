@@ -20,13 +20,12 @@ class mibs:
             'ifHCInOctets' : '1.3.6.1.2.1.31.1.1.1.6',
 
             #CMTS DOCSIS 2.0 /DOCSIS 3.0  OIDS
-			  'docsIfCmtsCmStatusMacAddress':'1.3.6.1.2.1.10.127.1.3.3.1.2',
+			'docsIfCmtsCmStatusMacAddress':'1.3.6.1.2.1.10.127.1.3.3.1.2',
             'docsIfCmtsCmStatusIpAddress':'1.3.6.1.2.1.10.127.1.3.3.1.3',
             'docsIfCmtsCmStatusDownChannelIfIndex':'1.3.6.1.2.1.10.127.1.3.3.1.4',
             'docsIfCmtsCmStatusUpChannelIfIndex':'1.3.6.1.2.1.10.127.1.3.3.1.5',
             'docsIfCmtsCmStatusRxPower':'1.3.6.1.2.1.10.127.1.3.3.1.6',
             'docsIfCmtsCmStatusTimingOffset':'1.3.6.1.2.1.10.127.1.3.3.1.7',
-            'docsIfCmtsCmStatusEqualizationData':'1.3.6.1.2.1.10.127.1.3.3.1.8',
             'docsIfCmtsCmStatusValue':'1.3.6.1.2.1.10.127.1.3.3.1.9',
             'docsIfCmtsCmStatusUnerroreds':'1.3.6.1.2.1.10.127.1.3.3.1.10',
             'docsIfCmtsCmStatusCorrecteds':'1.3.6.1.2.1.10.127.1.3.3.1.11',
@@ -59,16 +58,14 @@ class mibs:
             'docsIfCmtsCmStatusInetAddress':'1.3.6.1.2.1.10.127.1.3.3.1.21',
             
             #CM DOCSIS 2.0 /DOCSIS 3.0  OIDS
-        	  'docsDevResetNow.0':'1.3.6.1.2.1.69.1.1.3.0',
+        	'docsDevResetNow.0':'1.3.6.1.2.1.69.1.1.3.0',
             'docsIfDownChannelPower.0':'1.3.6.1.2.1.10.127.1.1.1.1.6.0',
             'docsIfSigQSignalNoise.0':'1.3.6.1.2.1.10.127.1.1.4.1.5.0',
             'docsIfCmStatusTxPower.0':'1.3.6.1.2.1.10.127.1.2.2.1.3.0',
             'docsIfDocsisBaseCapability.0':'1.3.6.1.2.1.10.127.1.1.5.0',
-            'docsIfUpChannelFrequency':'1.3.6.1.2.1.10.127.1.1.2.1.2',
             'docsIfDownChannelPower':'1.3.6.1.2.1.10.127.1.1.1.1.6',
             'docsIfDownChannelFrequency':'1.3.6.1.2.1.10.127.1.1.1.1.2',
             'docsIfDownChannelModulation':'1.3.6.1.2.1.10.127.1.1.1.1.4',
-            'docsIfDownChannelPower':'1.3.6.1.2.1.10.127.1.1.1.1.6',
             'docsIfUpChannelFrequency':'1.3.6.1.2.1.10.127.1.1.2.1.2',
             'docsIfUpChannelWidth':'1.3.6.1.2.1.10.127.1.1.2.1.3',
             'docsIfUpChannelType':'1.3.6.1.2.1.10.127.1.1.2.1.15',

@@ -3,17 +3,22 @@
 Created on Mon Jan 15 12:16:14 2018
 
 @author: gdavila
+
+This is a example to get Full Band Channel information
+On Docsis 3.0 Full Band Channels is a feature that allows to get detailed info
+about the power distribution of the espectrum
 """
 
-import cmDevices
+
+import docsisMon.cmDevices as cmDevices
+from docsisMon.snmp import SnmpError
 import time
-from snmp import SnmpError
-import sys
 import ggplot
+import sys
 
 def asint(s):
     try: return int(s), ''
-    except ValueError: return sys.maxint, s
+    except ValueError: return sys.maxsize, s
     
 def format_fb_data(data):
     spectrum_freq = []
@@ -41,23 +46,17 @@ def format_fb_data(data):
     
 
    
-#'10.32.173.143', 14987d33880f, DPC3848VE' 
-#'10.32.156.240', d404cdd9ff79, DCX4220
-# 10.32.141.48, f46befd91120, F@ST3686 10.254.1.29 lab
-#10.32.173.127, CC65.AD32.D3D7, SVG6582
-#10.254.1.29 D3.1
 def main():
     try:
-        #myIP= '10.32.165.147'
         myIP = '10.218.49.38'
         myCm = cmDevices.Cm(myIP)
-    
-       # getting the CM Model
-        #myCmModel = myCm.getModel()
-        #print ("CM acceded via SNMP Interface")
-        #print ("CM IP:\t", myIP)
-        #print ("CM Model:\t", myCmModel)
+        myCmModel = myCm.getModel()
+
+
+        print ("CM IP:\t", myIP)
+        print ("CM Model:\t", myCmModel)
         print ("CM Firmware:\t", myCm.getSw_rev())
+
         #Accesing to Docsis Interfaces
         myCmDocIf = myCm.DocsIf()
         
@@ -83,10 +82,7 @@ def main():
             fbc.noisebandwidth = 150
             fbc.numberOfAverages = 1
             fbc.config()
-            #print ("Set OK")
             timeConfig = time.time()
-            #time.sleep(20)
-            #fbc.config()
             result = 'data OK'
             timeGet = time.time()
             data = fbc.get()
@@ -98,18 +94,15 @@ def main():
                 timeGet = time.time()
                 data = fbc.get()
                 timeResponse = time.time()
-                #print (timeGet, len(format_fb_data(data)))
                 
             print(str(i)+" "+myCm.getModel() +'\t\t\t' + str(round(timeGet-timeConfig)) + \
                   '\t\t\t'+ str(round(timeResponse - timeGet)) + '\t\t\t'+  str(result)+'\t\t'+ str(len(format_fb_data(data)[0])))
-            #print ("\nData [frequency(Hz), Power (dBmV)]: \n")
             
         return(format_fb_data(data))  
     except SnmpError as e:
         print(e)
         result = e
  
-#main()
-freq, pot= main()
-ggplot.qplot(freq[0:], pot[0:], geom="line")
+    freq, pot= main()
+    ggplot.qplot(freq[0:], pot[0:], geom="line")
 

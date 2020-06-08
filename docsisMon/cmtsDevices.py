@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-from docsisDevice import DocsisDevice
-from ipDevices import  ipDevice
-from mibs import mibs
-
-import private as defaults
+from docsisMon.ipDevices import  ipDevice
+from docsisMon.mibs import mibs
 
 
 class Cmts(ipDevice):
-    """ Represents a CMTS
+    """ Represents a CMTS: This is a inheritance from ipDevice
+        public methods and attributes:
+        - ipMngmt: Device Ip management
+        - snmpIf: SNMP InterFace used to get all the infomation 
+        - getCm(): return CmInCmts Object
         
     """
     
     def __init__(self, ip):
         #inheritance from IP_device
         ipDevice.__init__(self,ip)
-        #Setting SNMP community
-        self.snmpIf.SnmpAttr.set_community(defaults. communities.COMM_CMTS)
+
         
         #setting deviceType to CMTS type
-        self.__deviceType=DocsisDevice.cmts()
+        self.__deviceType="CMTS"
         
         #cm virtual is a CM object in a CMTS
         self.cm=CmInCmts
@@ -32,7 +32,7 @@ class CmInCmts():
     """Represents a CM in a CMTS acceced via snmpIf"""        
     def __init__(self,snmpIf, cmMac):
         self.snmpIf=snmpIf
-        self.__deviceType=DocsisDevice.cmInCmts()
+        self.__deviceType="CmInCTMS"
         self.__mac=cmMac
         self.__ptr=self.getPtr()
         self.__ip=self.getIP()

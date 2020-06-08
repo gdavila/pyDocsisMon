@@ -1,15 +1,38 @@
 # -*- coding: utf-8 -*-
 
 
-from docsisDevice import DocsisDevice
-from ipDevices import ipDevice
-from mibs import mibs
+from docsisMon.ipDevices import ipDevice
+from docsisMon.mibs import mibs
 import re
-import private as defaults
+
+
 
 
 class Cm(ipDevice):
-    """Represents a CM"""
+    """Represents a CM: This is a inheritance from ipDevice
+
+    private methods and attributes:
+        - hw_rev
+        - vendor
+        - bootr
+        - sw_rev
+        - model
+        - deviceType
+        - DocsIf
+        - fbc
+
+    
+    public methods and attributes:
+        - DocsIf(): This represent the Docsis Interface Object in the CM
+        - fbc ():  This represent the Fullband Channel Object in the CM
+        - getInOctets(): In Octects in the CM
+        - getModel()
+        - getSw_rev()
+        - getVendor()
+        - getLANdevices() : Sagemcom private MIB to get the devices connected to the LAN iface
+        - ipMngmt: Device Ip management
+        - snmpIf: SNMP InterFace used to get all the infomation 
+    """
     
     #initialization based on cm IPv4
     def __init__(self,ip):
@@ -22,10 +45,7 @@ class Cm(ipDevice):
         self.__model = None
         
         #Setting device type to "CM"
-        self.__deviceType=DocsisDevice.cm()
-        
-        #Setting the snmp cm community
-        self.snmpIf.SnmpAttr.set_community(defaults.communities.COMM_CM)
+        self.__deviceType="CM"
         
         #Pass to DocsisIf the snmpIf used to get all the data
         self.__DocsIf=DocsIf(self.snmpIf)
@@ -73,6 +93,9 @@ class Cm(ipDevice):
     
     
 class fullbandCapture():
+
+    """Represents a FullBandCapture Object: This is a inheritance from snmpIf object
+    """
     
     def __init__(self, snmpIf):
         self.__snmpIf=snmpIf
@@ -105,9 +128,7 @@ class fullbandCapture():
         
     def get(self):
         oids = (mibs.oid['docsIf3CmSpectrumAnalysisMeasAmplitudeData'],)
-        #try:
         SnmpObj = self.__snmpIf.getTable(*oids)
-        #except SnmpError as e: return e
         if SnmpObj == None: return None
         oid = mibs.oid['docsIf3CmSpectrumAnalysisMeasAmplitudeData']+'.'
         pattern = re.compile(oid)
@@ -120,7 +141,36 @@ class fullbandCapture():
 
     
 class DocsIf():
-       """Represents Docsis Interfaces in a CM"""
+       """Represents Docsis Interfaces in a CM: This is a inheritance from snmpIf object
+       Public Methods:
+            Updaters: This methods allows to update the values of the DocsIf object by requesting the updated values via SNMP
+                - updateIndex()
+                - updateChId()
+                - updateChFreq()
+                - updateDownSnr()
+                - updateDownPower()
+                - updateOperStatus()
+                - updateCorrCodewords()
+                - updateUncorrCodewords()
+                - updateUnerrCodewords()
+                - update()
+                - updatePartialSrv()
+            Getters:
+                - getIndex()
+                - getType(self)
+                - getDownSnr(self)
+                - getDownPower(self)
+                - getCorrCodewords(self)
+                - getUncorrCodewords(self)
+                - getUnerrCodewords(self)
+                - getChId(self)
+                - getChFreq(self)
+                - getOperStatus(self)
+                - getMac(self)
+
+
+
+       """
        downstream_id="DS"
        upstream_id="US"
        

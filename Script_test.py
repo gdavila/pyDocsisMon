@@ -1,4 +1,4 @@
-#!/bin/python3.4
+#!/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 11 17:43:47 2017
@@ -9,58 +9,62 @@ Created on Wed Oct 11 17:43:47 2017
 
 '''Example
 
-     This example get some information about a CM by knowing its MAC address 
-     and the CMTS that CM belongs.
+     - This example get some information about a CM by knowing its MAC address 
+     and the CMTS that it belongs.
+
+     - If you already know the CM IP address you can access it directly
+
                   ------                      -------
                  | myCM |--------------------| myCMTS |
                   ------                      ------- 
-        MAC: 14987d310c6f              IP: 10.100.150.119
+        MAC: 80d04a097cec              IP: 10.101.248.14
 '''
 
 
 
-from cmtsDevices import Cmts
-from cmDevices import Cm
+from docsisMon.cmtsDevices import Cmts
+from docsisMon.cmDevices import Cm
 import time
 
-#Defining the CMTS  as an object
-#Be sure to had loaded the right communities of your network in private.py/default.py
-myCmts=Cmts('10.100.150.199')
 
-#Defining a CM inside the CMTS as an object
-myVirtualCm=myCmts.getCm('c8fb26869cf5')
+
+# 1 Defining the CMTS  as an object through its IP.
+myCmts=Cmts('10.101.248.14')
+
+# 2 changing the default SNMP COMMUNITY
+myCmts.snmpIf.SnmpAttr.COMMUNITY='private'
+
+
+# 3 Getting a CM inside the CMTS as an object through its MAC
+myVirtualCm=myCmts.getCm('80d04a097cec')
 myIP = myVirtualCm.getIP()
-print ("Virtual CM inside the CMTS: \n")
-print ("CM IP:\t", myIP, "\nPtrCM in CMTS:\t", myVirtualCm.getPtr())
+print ("Virtual CM inside the CMTS:")
+print ("CM IP:\t", myIP, "\t PtrCM in CMTS:\t", myVirtualCm.getPtr())
 
 
-
-
-# Defining the  CM as an object based on the IP obtained from de CMTS
-# The method uses the given IP address to acces to the CM through SNMP interface
+# 4 Defining the  CM as an object based on the IP obtained from de CMTS
 myCm = Cm(myIP)
+myCm.snmpIf.SnmpAttr.COMMUNITY='private'
 
-#getting the CM Model
+# 5 getting the CM Model
 myCmModel = myCm.getModel()
 print ("CM acceded via SNMP Interface")
 print ("CM IP:\t", myIP)
 print ("CM Model:\t", myCmModel)
 
-#Accesing to Docsis Interfaces
+# 6 Accesing to Docsis Interfaces
 myCmDocIf = myCm.DocsIf()
 
-#Getting the MAC address of Docsis Interfaces (CM)
+# 7 Getting the MAC address 
 myCmMac = myCmDocIf.getMac()
 print ("CM Mac:\t", myCmMac)
 
-#Getting the CHannel list
+# 8 Getting the Channel list the CM is registered on
 myCmChannels = myCmDocIf.getChFreq()
 print ("CM Channel list:\t", myCmChannels )
 
 
-#Getting the Channel list in partial services;
-    # This method is just an aproximation/estimation for real partial service channels.
-    # based on the up/down flap on the channel table entry
+# 9 Getting the list of channles who are in partial service status
 PartialServ = myCmDocIf.getPartialSrvCh()
 print ("PartiServ Channel list:\t", PartialServ )
 

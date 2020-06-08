@@ -1,95 +1,99 @@
 # pyDocsisMon
 
-Python Docsis Monitoring
+Python Docsis Monitoring (`PyDocsisMon`)
 
-# Summary
+## Summary
 
-PyDocsisMon is a very draft library/tool to work in estraightfoward maner with Docsis atribbutes. 
+`PyDocsisMon` is a set of basic functions and definitions to work in estraightfoward maner with Docsis atribbutes through SNMP.
 
-This tool allows to define:
+This library allows  to define:
 
 * Cable Modem Termination System (CMTS)
 * Cable Modem (CM)
-* Docsis Set Top Boxes (STB)
 
-pyDocsisMon uses SNMPv2 interface to get information about each Docsis Object. It is just needed
-to add your snmp credentials (communities) at private.py file.
+`pyDocsisMon` uses SNMPv2 interface to get information about Docsis Atributes.
 
-Some examples about how to use this tool could be found in test.py
+The main goal is to make an abstraction of the SNMP complexity to focus only on Docsis atributes.
+Some examples about how to use this tool could be found in `Script_[files].py`. The examples scrips allows:
 
-Clasess definition should be reviewed in order to better design the object oriented implementation of the library.
+* Easily get information about a CM such as: Hardware version, Software Version, Docsis Interfaces Informacion, Docsis Channels Information, etc.
+* Easily set features such as Full Band Channel .
 
-# Example
+More features could be added in a estraightfoward way by just adding new functions to each object. New MIBS could also be added.
 
-Download pyDocsisMon repository and edit private.py file with your credentials. (Be sure to untrack this changes from git)
+## Example
 
 ```python
 
-from cmDevices import Cm
+'''Example
+
+     - This example get some information about a CM by knowing its MAC address 
+     and the CMTS that it belongs.
+
+     - If you already know the CM IP address you can access it directly
+
+                  ------                      -------
+                 | myCM |--------------------| myCMTS |
+                  ------                      ------- 
+        MAC: 80d04a097cec              IP: 10.101.248.14
+'''
+
+
+
+from docsisMon.cmtsDevices import Cmts
+from docsisMon.cmDevices import Cm
 import time
 
-myIP = 'Insert here the Cm IP address'
-#Example:
-#myIP= '192.168.0.10'
 
+
+# 1 Defining the CMTS  as an object through its IP.
+myCmts=Cmts('10.101.248.14')
+
+# 2 changing the default SNMP COMMUNITY
+myCmts.snmpIf.SnmpAttr.COMMUNITY='private'
+
+
+# 3 Getting a CM inside the CMTS as an object through its MAC
+myVirtualCm=myCmts.getCm('80d04a097cec')
+myIP = myVirtualCm.getIP()
+print ("Virtual CM inside the CMTS:")
+print ("CM IP:\t", myIP, "\t PtrCM in CMTS:\t", myVirtualCm.getPtr())
+
+
+# 4 Defining the  CM as an object based on the IP obtained from de CMTS
 myCm = Cm(myIP)
+myCm.snmpIf.SnmpAttr.COMMUNITY='private'
 
-#getting the CM Model
+# 5 getting the CM Model
 myCmModel = myCm.getModel()
 print ("CM acceded via SNMP Interface")
 print ("CM IP:\t", myIP)
 print ("CM Model:\t", myCmModel)
 
-#Accesing to Docsis Interfaces
+# 6 Accesing to Docsis Interfaces
 myCmDocIf = myCm.DocsIf()
 
-#Getting the MAC address of Docsis Interfaces (CM)
+# 7 Getting the MAC address 
 myCmMac = myCmDocIf.getMac()
 print ("CM Mac:\t", myCmMac)
 
-#Getting the CHannel list
+# 8 Getting the Channel list the CM is registered on
 myCmChannels = myCmDocIf.getChFreq()
 print ("CM Channel list:\t", myCmChannels )
 
 
-#Getting the Channel list in partial services;
-    # This method is just an aproximation/estimation for real partial service channels.
-    # based on the up/down flap on the channel table entry
+# 9 Getting the list of channles who are in partial service status
 PartialServ = myCmDocIf.getPartialSrvCh()
 print ("PartiServ Channel list:\t", PartialServ )
-
-
-print ("Full Band Capture Information:\t", PartialServ )
-#Gettingfull band capture information;
-fbc = myCm.fbc()
-fbc.config()
-fbc.inactivityTimeout = 480
-fbc.firstFrequency = 50000000
-fbc.lastFrequency =  70000000
-fbc.span =  10000000
-fbc.binsPerSegment = 1024
-fbc.noisebandwidth = 150
-fbc.numberOfAverages = 1
-time.sleep(0.5)
-iniTime = time.time()
-data = fbc.get()
-result = 'OK'
-if data == {}: result = 'FAIL'
-endTime = time.time()
-print("Modelo\t\t Fullband Response \t\t Result")
-print(myCm.getModel() +'\t\t' + str(endTime-iniTime) + '\t\t'+ result)
-
 ```
+
 Output expected:
-```
+
+```json
 CM acceded via SNMP Interface
 CM IP:   192.168.0.10
 CM Model:        F@ST3286
-CM Mac:  0x8c10d4fd10a2
+CM Mac:  0x80d04a097cec
 CM Channel list:         {'3': '603000000', '48': '609000000', '49': '615000000', '50': '621000000', '51': '627000000', '52': '633000000', '53': '639000000', '54': '645000000', '4': '30200000', '80': '36600000'}
 PartiServ Channel list:  {}
-Full Band Capture Information:   {}
-Modelo           Fullband Response               Result
-F@ST3286                26.49843430519104               OK
-
 ```

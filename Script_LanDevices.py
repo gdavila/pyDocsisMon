@@ -5,9 +5,12 @@
 Created on Mon Jan 23 17:56:14 2018
 
 @author: gdavila
+
+This example uses a propietary MIB only available on Sagecom devices
+to get information about the devices connected to the LAN interface of the CM
 """
 
-import cmDevices
+import docsisMon.cmDevices as cmDevices
 
 
 myIP= '10.32.173.143'
